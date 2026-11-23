@@ -24,8 +24,8 @@ import {
   History,
   Layers,
   LogOut,
-  Receipt,
-  Rocket,
+  ArrowRightLeft,
+  Terminal,
   ShieldCheck,
   Sparkles,
   Store,
@@ -44,6 +44,8 @@ import {
 import { ChatHistoryNav } from "@/modules/space/components/chat-history-nav";
 import { CardDitherBackground } from "@/components/ui/card-dither-background";
 import { LeaderboardBanner } from "@/components/leaderboard-banner";
+import { useQuery } from "convex/react";
+import { api } from "../../convex/_generated/api";
 import {
   ApprovalToaster,
   usePendingApprovalCount,
@@ -52,7 +54,7 @@ import {
 /** Collapsed by default under "More". */
 const MORE_LINKS = [
   { label: "Wallet", href: "/space/wallet", icon: Wallet },
-  { label: "Creator space", href: "/space/creator", icon: Rocket },
+  { label: "Creator space", href: "/space/creator", icon: Terminal },
   { label: "Agents approval", href: "/space/approvals", icon: ShieldCheck },
 ];
 
@@ -81,7 +83,7 @@ const NAV_LINKS = [
   { label: "Home", href: "/space", icon: Home },
   { label: "Marketplace", href: "/space/marketplace", icon: Store },
   { label: "Recent Runs", href: "/space/runs", icon: History },
-  { label: "Transactions", href: "/space/transactions", icon: Receipt },
+  { label: "Transactions", href: "/space/transactions", icon: ArrowRightLeft },
 ];
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -105,6 +107,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     return () => clearInterval(id);
   }, []);
   const pendingApprovals = usePendingApprovalCount();
+  const wallet = useQuery(api.wallet.getWallet);
+  const available = wallet
+    ? Math.round((wallet.credits - (wallet.escrow ?? 0)) * 100) / 100
+    : null;
   const [logoutOpen, setLogoutOpen] = useState(false);
   const [isGuest, setIsGuest] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -150,7 +156,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         className="border-none bg-neutral-100 dark:bg-neutral-900 text-sidebar-foreground"
         {...props}
       >
-        <SidebarHeader className="p-3 pb-2 flex flex-row items-center gap-5 shrink-0">
+        <SidebarHeader className="p-3 pb-2 flex flex-row items-center gap-5 shrink-0 group-data-[collapsible=icon]:flex-col group-data-[collapsible=icon]:gap-3 group-data-[collapsible=icon]:px-0 group-data-[collapsible=icon]:items-center">
+          <Image
+            src="/icon-192.png"
+            alt="Catelog"
+            width={32}
+            height={32}
+            className="hidden size-8 rounded-lg group-data-[collapsible=icon]:block"
+          />
           <div className="flex items-center gap-2 overflow-hidden">
             <Image
               src="/logo.svg"
@@ -161,7 +174,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               className="dark:invert brightness-100 object-contain h-9 w-auto shrink-0 group-data-[collapsible=icon]:hidden"
             />
           </div>
-          <SidebarTrigger className="text-foreground hover:bg-black/5 dark:hover:bg-white/10 shrink-0" />
+          <SidebarTrigger className="text-black dark:text-white hover:bg-black/5 dark:hover:bg-white/10 shrink-0 group-data-[collapsible=icon]:[&_svg]:size-5!" />
         </SidebarHeader>
 
         <SidebarContent className="p-2 gap-3 font-sans">
@@ -214,7 +227,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                       className="h-9 gap-2.5 rounded-lg px-3 text-[13px] font-medium text-black hover:bg-black/5 hover:text-black data-active:bg-black/[0.07] data-active:text-black dark:text-white dark:hover:text-white dark:hover:bg-white/10"
                     >
                       <Icon
-                        className="size-4 text-neutral-600"
+                        className="size-4 text-neutral-600 group-data-[collapsible=icon]:size-5! group-data-[collapsible=icon]:text-black dark:group-data-[collapsible=icon]:text-white"
                         strokeWidth={1.75}
                       />
                       <span>{label}</span>
@@ -257,7 +270,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   className="h-9 cursor-pointer gap-2.5 rounded-lg px-3 text-[13px] font-medium text-black hover:bg-black/5 hover:text-black dark:text-white dark:hover:bg-white/10 dark:hover:text-white"
                 >
                   <ListChevronsDownUpIcon
-                    className="size-4 text-neutral-600"
+                    className="size-4 text-neutral-600 group-data-[collapsible=icon]:size-5! group-data-[collapsible=icon]:text-black dark:group-data-[collapsible=icon]:text-white"
                     strokeWidth={1.75}
                   />
                   <span>More</span>
@@ -289,12 +302,51 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                             )}
                           >
                             <Icon
-                              className="size-4 text-neutral-600"
+                              className="size-4 text-neutral-600 group-data-[collapsible=icon]:size-5! group-data-[collapsible=icon]:text-black dark:group-data-[collapsible=icon]:text-white"
                               strokeWidth={1.75}
                             />
                             <span>{label}</span>
                             {href === "/space/approvals" && (
-                              <CountBadge count={pendingApprovals} />
+                              <span
+                                className={cn(
+                                  "ml-auto flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[10px] font-semibold leading-none",
+                                  pendingApprovals > 0
+                                    ? "bg-red-500 text-white"
+                                    : "bg-neutral-200 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300",
+                                )}
+                              >
+                                {pendingApprovals > 9 ? "9+" : pendingApprovals}
+                              </span>
+                            )}
+                            {href === "/space/wallet" && available !== null && (
+                              <span
+                                className={cn(
+                                  "ml-auto flex h-4 items-center rounded-full px-1.5 text-[10px] font-semibold leading-none",
+                                  available < 300
+                                    ? "bg-amber-400 text-black"
+                                    : "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-200",
+                                )}
+                              >
+                                {available < 300 ? "Topup" : `${available} cr`}
+                              </span>
+                            )}
+                            {href === "/space/creator" && (
+                              <span className="ml-auto flex items-center gap-1">
+                                <Image
+                                  src="/typescript.png"
+                                  alt="TypeScript"
+                                  width={14}
+                                  height={14}
+                                  className="size-3.5 rounded-[3px] object-contain"
+                                />
+                                <Image
+                                  src="/python.png"
+                                  alt="Python"
+                                  width={14}
+                                  height={14}
+                                  className="size-3.5 object-contain"
+                                />
+                              </span>
                             )}
                           </Link>
                         </li>

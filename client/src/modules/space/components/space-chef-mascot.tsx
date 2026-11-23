@@ -18,7 +18,6 @@ import { authClient } from "@/lib/auth-client";
 import { RecipeCards } from "./recipe-cards";
 import { TryAgents } from "./try-agents";
 import {
-  Copy,
   ArrowUp,
   Bot,
   Search,
@@ -93,16 +92,6 @@ const AGENT_TARGETS: AgentTarget[] = [
   { id: "cursor", name: "Cursor", src: "/cursor.svg", invertOnDark: true },
   { id: "hermes", name: "Hermes Agent", src: "/hermesagent.svg" },
 ];
-
-// Demo only: copies an empty prompt for now.
-const copyAgentPrompt = async (target?: string) => {
-  try {
-    await navigator.clipboard.writeText("");
-  } catch {
-    // clipboard unavailable; still show feedback in demo mode
-  }
-  toast.success(target ? `Prompt copied for ${target}` : "Prompt copied");
-};
 
 const PLACEHOLDER_STRINGS = [
   "Ask for Leads generation agent.",
@@ -326,8 +315,8 @@ export function SpaceChefMascot({ chatId }: { chatId?: string }) {
               <Fade show={!sent} delay={0.12}>
                 <button
                   type="button"
-                  onClick={() => copyAgentPrompt()}
-                  className="inline-flex items-center gap-2 rounded-full border border-border dark:border-neutral-800 bg-linear-to-br from-white via-white to-neutral-300 px-3 py-1 text-[11px] 2xl:text-xs font-medium text-foreground tracking-tight shadow-2xs transition-all duration-150 hover:bg-neutral-100/60 dark:hover:bg-neutral-900 active:scale-[0.98]"
+                  onClick={() => router.push("/space/connect")}
+                  className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-border dark:border-neutral-800 bg-linear-to-br from-white via-white to-neutral-300 px-3 py-1 text-[11px] 2xl:text-xs font-medium text-foreground tracking-tight shadow-2xs transition-all duration-150 hover:bg-neutral-100/60 dark:hover:bg-neutral-900 active:scale-[0.98]"
                 >
                   Plug your agent into catelog
                   <span className="flex items-center gap-1.5">
@@ -377,36 +366,6 @@ export function SpaceChefMascot({ chatId }: { chatId?: string }) {
                     >
                       <ArrowUp className="size-3.5 2xl:size-4" />
                     </button>
-
-                    {/* Copy prompt: inside input bar to the right of the send button */}
-                    <div className="group/copy flex items-center">
-                      <button
-                        type="button"
-                        aria-label="Copy prompt"
-                        onClick={() => copyAgentPrompt()}
-                        className="size-6 2xl:size-7 rounded-md border border-border/80 dark:border-neutral-800 bg-background dark:bg-neutral-800/80 inline-flex items-center justify-center text-muted-foreground transition-colors hover:bg-neutral-200/70 dark:hover:bg-neutral-800 hover:text-foreground active:scale-95"
-                      >
-                        <Copy className="size-3.5 2xl:size-4" />
-                      </button>
-                      <div className="flex items-center gap-0.5 overflow-hidden max-w-0 opacity-0 transition-all duration-300 ease-out group-hover/copy:max-w-32 group-hover/copy:opacity-100 group-hover/copy:ml-1">
-                        {AGENT_TARGETS.map((t) => (
-                          <button
-                            key={t.id}
-                            type="button"
-                            title={`Copy prompt for ${t.name}`}
-                            aria-label={`Copy prompt for ${t.name}`}
-                            onClick={() => copyAgentPrompt(t.name)}
-                            className="size-6 2xl:size-7 shrink-0 rounded-md inline-flex items-center justify-center transition-colors hover:bg-neutral-200/70 dark:hover:bg-neutral-800 active:scale-95"
-                          >
-                            <img
-                              src={t.src}
-                              alt=""
-                              className={`size-5 ${t.invertOnDark ? "dark:invert" : ""}`}
-                            />
-                          </button>
-                        ))}
-                      </div>
-                    </div>
                   </div>
                 </div>
               </div>

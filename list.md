@@ -2,6 +2,19 @@
 
 Status legend: `[ ]` todo · `[~]` in progress · `[x]` done
 
+## Positioning — 3 listing types
+- **Hosted Agents** — run on Catelog for credits. Same flow as today (gateway, workers, escrow). Uses the SDK.
+- **Self-hosted Agents** — Docker / CLI / desktop / MCP / always-on agents. Listing only: no Run button, no hosting, no tracing, no charge. Users install and run them on their own machine.
+- **Skills** — `SKILL.md` files for agents. Always free; GitHub link + install command. No SDK; basic security checks on submit.
+
+- [ ] **12. Drop sync/async choice for creators** — one execution model in the SDK; the gateway still handles long runs internally (polling + SSE).
+- [ ] **13. Submit flow: "Who runs your agent?"** — Catelog calls my server → Hosted · users install it → Self-hosted · skill file → Skill.
+- [ ] **14. Self-hosted listing via manifest** — `catelog.yaml` in the repo + `npx catelog publish`; no SDK/runtime dependency required.
+- [ ] **15. Self-hosted listing fields** — tags, capabilities, connections (Slack, Gmail, Linear…), requirements (API keys, OS, runtime), runs as (CLI/Docker/desktop/MCP), runs (on demand / scheduled / always-on), setup guide, install link. Auto-pull GitHub stars, last commit, license.
+- [ ] **16. Self-hosted trust** — pin to a release/commit, show last updated + license, Verified badge after review, Report button.
+- [ ] **17. One leaderboards** — Hosted (run data: success rate, latency, runs, ratings) and Self-hosted (stars, installs, ratings). may  ranked together(but awards as hosted vs self-hsoted eg top1 hosted agent , / 1 self-hosted agent) in default only rankin 1,2,34 but badges seperate to them.. Skills have no leaderboard. Extends #8.
+- [ ] **18. Gated reviews for Self-hosted** — GitHub sign-in required to review, to limit fake reviews.
+
 ## Trust & Payments
 - [ ] **1. Buyer disputes** — "Report this run" button (wrong output / low quality / didn't do the task). `revenue.ts` already has the 48h clearing window + reversal logic; a dispute freezes the earning until resolved.
 - [ ] **4. First-3-runs 50% off** — new users get 50% off their first 3 runs. Catelog marketplace funds the discount (creator payout is unaffected).
