@@ -43,6 +43,7 @@ import {
 } from "@/modules/space/components/runs/active-runs-pill";
 import { ChatHistoryNav } from "@/modules/space/components/chat-history-nav";
 import { CardDitherBackground } from "@/components/ui/card-dither-background";
+import { LeaderboardBanner } from "@/components/leaderboard-banner";
 import {
   ApprovalToaster,
   usePendingApprovalCount,
@@ -89,6 +90,20 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { active: activeRuns, finished } = useSidebarRuns();
   const [recentOpen, setRecentOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
+  const [promoIdx, setPromoIdx] = useState(0);
+  const promoRef = React.useRef<HTMLDivElement>(null);
+  const promoPaused = React.useRef(false);
+
+  // Auto-slide the footer promo cards every 4s (pauses while hovered).
+  React.useEffect(() => {
+    const id = setInterval(() => {
+      const el = promoRef.current;
+      if (!el || promoPaused.current) return;
+      const next = (Math.round(el.scrollLeft / el.clientWidth) + 1) % 2;
+      el.scrollTo({ left: next * el.clientWidth, behavior: "smooth" });
+    }, 4000);
+    return () => clearInterval(id);
+  }, []);
   const pendingApprovals = usePendingApprovalCount();
   const [logoutOpen, setLogoutOpen] = useState(false);
   const [isGuest, setIsGuest] = useState(false);
@@ -294,8 +309,26 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarContent>
 
         <SidebarFooter className="p-2 pb-3 flex flex-col gap-5">
+          {/* Scrollable promo cards: Agent Space + Leaderboard */}
+          <div className="group-data-[collapsible=icon]:hidden">
+            <div
+              ref={promoRef}
+              onMouseEnter={() => {
+                promoPaused.current = true;
+              }}
+              onMouseLeave={() => {
+                promoPaused.current = false;
+              }}
+              onScroll={(e) => {
+                const el = e.currentTarget;
+                setPromoIdx(Math.round(el.scrollLeft / el.clientWidth));
+              }}
+              style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+              className="flex snap-x snap-mandatory items-stretch gap-2 overflow-x-auto [&::-webkit-scrollbar]:!hidden"
+            >
+              <div className="w-full shrink-0 snap-center">
           {/* Agent Space Card with Image 1 style Pixel Dither effect */}
-          <div className="relative overflow-hidden py-4 px-3 rounded-lg border border-neutral-200/90 dark:border-neutral-800 shadow-2xs group-data-[collapsible=icon]:hidden bg-white dark:bg-[#0c0c0e]">
+          <div className="relative h-full overflow-hidden py-4 px-3 rounded-lg border border-neutral-200/90 dark:border-neutral-800 shadow-2xs bg-white dark:bg-[#0c0c0e]">
             {/* Pixel Dither Background: top white, middle to bottom dither pixels */}
             <div
               aria-hidden="true"
@@ -331,6 +364,25 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <span>Publish Agent</span>
                 <ArrowRight className="size-3 group-hover/btn:translate-x-0.5 transition-transform" />
               </Link>
+            </div>
+          </div>
+              </div>
+              <div className="w-full shrink-0 snap-center">
+                <LeaderboardBanner />
+              </div>
+            </div>
+            <div className="mt-2 flex justify-center gap-1.5" aria-hidden="true">
+              {[0, 1].map((i) => (
+                <span
+                  key={i}
+                  className={cn(
+                    "h-1 rounded-full transition-all",
+                    promoIdx === i
+                      ? "w-4 bg-neutral-800 dark:bg-neutral-200"
+                      : "w-1.5 bg-neutral-300 dark:bg-neutral-700",
+                  )}
+                />
+              ))}
             </div>
           </div>
 
