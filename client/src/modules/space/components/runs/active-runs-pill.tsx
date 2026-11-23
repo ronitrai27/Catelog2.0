@@ -104,9 +104,15 @@ export function ActiveRunsList({ runs }: { runs: RecentRun[] }) {
 }
 
 /** Latest finished runs (top 4): green = succeeded, red = failed or aborted. Opened by the chevron. */
-export function RecentRunsList({ runs, active }: { runs: RecentRun[]; active: RecentRun[] }) {
+export function RecentRunsList({
+  runs,
+  active,
+}: {
+  runs: RecentRun[];
+  active: RecentRun[];
+}) {
   return (
-    <div className="mt-1 flex flex-col gap-0.5 border-l border-neutral-400 pl-2 ml-5 group-data-[collapsible=icon]:hidden dark:border-neutral-700">
+    <div className="mt-1 flex flex-col gap-0.5 border-l border-dashed border-neutral-600 pl-2 ml-5 group-data-[collapsible=icon]:hidden dark:border-neutral-700">
       {runs.length === 0 && active.length === 0 && (
         <p className="px-2 py-1 text-xs text-muted-foreground">No runs yet</p>
       )}

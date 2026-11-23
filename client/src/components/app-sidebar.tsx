@@ -30,15 +30,23 @@ import {
   Sparkles,
   Store,
   Wallet,
+  ListChevronsDownUpIcon,
 } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { authClient } from "@/lib/auth-client";
 import { LogoutDialog } from "@/modules/space/components/logout-dialog";
-import { ActiveRunsIndicator, RecentRunsList, useSidebarRuns } from "@/modules/space/components/runs/active-runs-pill";
+import {
+  ActiveRunsIndicator,
+  RecentRunsList,
+  useSidebarRuns,
+} from "@/modules/space/components/runs/active-runs-pill";
 import { ChatHistoryNav } from "@/modules/space/components/chat-history-nav";
 import { CardDitherBackground } from "@/components/ui/card-dither-background";
-import { ApprovalToaster, usePendingApprovalCount } from "@/modules/space/components/use-pending-approvals";
+import {
+  ApprovalToaster,
+  usePendingApprovalCount,
+} from "@/modules/space/components/use-pending-approvals";
 
 /** Collapsed by default under "More". */
 const MORE_LINKS = [
@@ -47,7 +55,13 @@ const MORE_LINKS = [
   { label: "Agents approval", href: "/space/approvals", icon: ShieldCheck },
 ];
 
-function CountBadge({ count, className }: { count: number; className?: string }) {
+function CountBadge({
+  count,
+  className,
+}: {
+  count: number;
+  className?: string;
+}) {
   if (count <= 0) return null;
   return (
     <span
@@ -189,20 +203,31 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                         strokeWidth={1.75}
                       />
                       <span>{label}</span>
-                      {href === "/space/runs" && <ActiveRunsIndicator count={activeRuns.length} />}
+                      {href === "/space/runs" && (
+                        <ActiveRunsIndicator count={activeRuns.length} />
+                      )}
                     </SidebarMenuButton>
                     {href === "/space/runs" && (
                       <>
                         <button
                           type="button"
-                          aria-label={recentOpen ? "Hide recent runs" : "Show recent runs"}
+                          aria-label={
+                            recentOpen ? "Hide recent runs" : "Show recent runs"
+                          }
                           aria-expanded={recentOpen}
                           onClick={() => setRecentOpen((v) => !v)}
                           className="absolute right-1.5 top-2 flex size-5 cursor-pointer items-center justify-center rounded text-neutral-600 hover:bg-black/5 group-data-[collapsible=icon]:hidden dark:hover:bg-white/10"
                         >
-                          <ChevronDown className={cn("size-4 transition-transform", recentOpen && "rotate-180")} />
+                          <ChevronDown
+                            className={cn(
+                              "size-4 transition-transform",
+                              recentOpen && "rotate-180",
+                            )}
+                          />
                         </button>
-                        {recentOpen && <RecentRunsList runs={finished} active={activeRuns} />}
+                        {recentOpen && (
+                          <RecentRunsList runs={finished} active={activeRuns} />
+                        )}
                       </>
                     )}
                   </SidebarMenuItem>
@@ -216,19 +241,28 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   onClick={() => setMoreOpen((v) => !v)}
                   className="h-9 cursor-pointer gap-2.5 rounded-lg px-3 text-[13px] font-medium text-black hover:bg-black/5 hover:text-black dark:text-white dark:hover:bg-white/10 dark:hover:text-white"
                 >
-                  <Layers className="size-4 text-neutral-600" strokeWidth={1.75} />
+                  <ListChevronsDownUpIcon
+                    className="size-4 text-neutral-600"
+                    strokeWidth={1.75}
+                  />
                   <span>More</span>
                   <span className="ml-auto flex items-center gap-1.5 group-data-[collapsible=icon]:hidden">
-                    {!moreOpen && <CountBadge count={pendingApprovals} className="ml-0" />}
+                    {!moreOpen && (
+                      <CountBadge count={pendingApprovals} className="ml-0" />
+                    )}
                     <ChevronDown
-                      className={cn("size-4 text-neutral-600 transition-transform", moreOpen && "rotate-180")}
+                      className={cn(
+                        "size-4 text-neutral-600 transition-transform",
+                        moreOpen && "rotate-180",
+                      )}
                     />
                   </span>
                 </SidebarMenuButton>
                 {moreOpen && (
-                  <ul className="mt-0.5 ml-5 flex flex-col gap-0.5 border-l border-neutral-300/70 pl-2 group-data-[collapsible=icon]:hidden dark:border-neutral-700">
+                  <ul className="mt-0.5 ml-5 flex flex-col gap-0.5 border-l border-dashed border-neutral-600 pl-2 group-data-[collapsible=icon]:hidden dark:border-neutral-700">
                     {MORE_LINKS.map(({ label, href, icon: Icon }) => {
-                      const active = pathname === href || pathname.startsWith(`${href}/`);
+                      const active =
+                        pathname === href || pathname.startsWith(`${href}/`);
                       return (
                         <li key={href}>
                           <Link
@@ -239,9 +273,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                               active && "bg-black/[0.07] dark:bg-white/10",
                             )}
                           >
-                            <Icon className="size-4 text-neutral-600" strokeWidth={1.75} />
+                            <Icon
+                              className="size-4 text-neutral-600"
+                              strokeWidth={1.75}
+                            />
                             <span>{label}</span>
-                            {href === "/space/approvals" && <CountBadge count={pendingApprovals} />}
+                            {href === "/space/approvals" && (
+                              <CountBadge count={pendingApprovals} />
+                            )}
                           </Link>
                         </li>
                       );
