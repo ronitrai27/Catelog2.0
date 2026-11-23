@@ -6,6 +6,7 @@ import { mcp } from "better-auth/plugins";
 import { components } from "../_generated/api";
 import type { DataModel } from "../_generated/dataModel";
 import authConfig from "../auth.config";
+import { resetPasswordEmail, sendEmail, verificationEmail } from "./email";
 import schema from "./schema";
 
 // Better Auth Component
@@ -70,6 +71,16 @@ export const createAuthOptions = (ctx: GenericCtx<DataModel>) => {
     },
     emailAndPassword: {
       enabled: true,
+      sendResetPassword: async ({ user, url }: any) => {
+        await sendEmail({ to: user.email, ...resetPasswordEmail(user.name, url) });
+      },
+    },
+    emailVerification: {
+      sendOnSignUp: true,
+      autoSignInAfterVerification: true,
+      sendVerificationEmail: async ({ user, url }: any) => {
+        await sendEmail({ to: user.email, ...verificationEmail(user.name, url) });
+      },
     },
     socialProviders: providers,
     account: {
